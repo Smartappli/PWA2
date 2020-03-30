@@ -80,27 +80,21 @@ function updateUI(data) {
   }
 }
 
-var url = 'https://httpbin.org/post';
+var url = 'https://covidgram.firebaseio.com/posts.json';
 var networkDataReceived = false;
 
-fetch(url, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  },
-  body: JSON.stringify({
-    message: 'Some message'
-  })
-})
+fetch(url)
   .then(function(res) {
     return res.json();
   })
   .then(function(data) {
     networkDataReceived = true;
     console.log('From web', data);
-    clearCards();
-    createCard();
+    var dataArray = [];
+    for (var key in data) {
+      dataArray.push(data[key]);
+    }
+    updateUI(dataArray);
   });
 
 if ('caches' in window) {
@@ -113,8 +107,11 @@ if ('caches' in window) {
     .then(function(data) {
       console.log('From cache', data);
       if (!networkDataReceived) {
-        clearCards();
-        createCard();
+        var dataArray = [];
+        for (var key in data) {
+          dataArray.push(data[key]);
+        }
+        updateUI(dataArray)
       }
     });
 }
